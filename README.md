@@ -20,14 +20,16 @@ service dnsmasq restart
 
 # Blocklist Pattern
 
-| Pattern | Source | Type | Category
-| RegEx to parse the Source | URL to download the domains to be blocked | not used | not used
+| Pattern | Source  | Type    | Category |
+| ------- | ------- | ------- | -------  |
+| RegEx to parse the Source | URL to download the domains to be blocked | not used | not used |
 
 ## Special RegEx
 
-| Pattern | Meaning
-| NXDOMAIN | Source entry skipped
-| csv | Source parsed as comma separated values
+| Pattern | Meaning |
+| ------- | ------- |
+| NXDOMAIN | Source entry skipped |
+| csv | Source parsed as comma separated values |
 
 # Kudos
 
