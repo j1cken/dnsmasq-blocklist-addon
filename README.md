@@ -2,6 +2,22 @@
 
 It's just a simple script which creates an include file for dnsmasq. 
 
+# How to use
+
+```
+sh create-dnsmasq-include-file
+echo "restart dnsmasq? Ctrl-C to cancel ..."
+read myarg
+service dnsmasq restart
+```
+
+## Rollback
+
+```
+cp /usr/local/etc/dnsmasq.more.conf{.bak,}
+service dnsmasq restart
+```
+
 # Blocklist Pattern
 
 | Pattern | Source | Type | Category
