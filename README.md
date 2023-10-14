@@ -33,4 +33,4 @@ service dnsmasq restart
 
 # Kudos
 
-Kudos to [notracking|https://github.com/notracking/hosts-blocklists]! The blocklist is based on the work done in this retired project!
+Kudos to [notracking](https://github.com/notracking/hosts-blocklists)! The blocklist is based on the work done in this retired project!
