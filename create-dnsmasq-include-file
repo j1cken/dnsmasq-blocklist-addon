@@ -1,0 +1,35 @@
+OFILE=/usr/local/etc/dnsmasq.more.conf
+cp ${OFILE} ${OFILE}.bak
+wc -l ${OFILE}*
+>$OFILE
+counter=1
+while read line; do
+  pattern=$(echo $line | cut -f 1 -d "|")
+  url=$(echo $line | cut -f 2 -d "|")
+  echo "curl $url | sed $pattern"
+  if [ x$pattern == "xNXDOMAIN" ];then
+    continue
+  fi
+
+  echo "### $url" >>${OFILE}
+  if [ x$pattern == "xcsv" ];then
+    curl -s $url | cut -d ',' -f 3 | sed -E '{s#"#address=/#;s#"$#/127.0.0.1#;}' >>$OFILE
+  else
+    #curl -s $url | sed -E '{/^#/d;/^$/d;s#'"$pattern"'#address=/#;s%#.*$%%;s#/([^/]*).*$#/\1#;s#[[:space:]]##g;s#$#/127.0.0.1#;}' >>$OFILE
+    curl -s $url | grep $pattern | sed -E '{/^#/d;/^$/d;s#'"$pattern"'#address=/#;s%#.*$%%;s#(/[^/]*).*$#\1#;s#[[:space:]]##g;s#$#/127.0.0.1#;}' >>$OFILE
+  fi
+  #if [ $counter -eq $1 ];then
+  #  exit 1
+  #fi
+  counter=$(expr $counter + 1)
+done <blocklists
+
+sed -i.b4clean '{/^address=\/\/127.0.0.1$/d;}' $OFILE
+
+# ... apply whitelist
+while read line; do
+  sed -i.whitelist '{/^address=\/'"$line"'\//d;}' $OFILE
+done <whitelist
+
+wc -l ${OFILE}*
+
