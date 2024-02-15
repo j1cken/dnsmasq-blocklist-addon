@@ -1,14 +1,16 @@
 OFILE=/usr/local/etc/dnsmasq.more.conf
 TMPFILE=/usr/local/etc/dnsmasq.more.conf.tmp
+WORKFILE=/usr/local/etc/dnsmasq.more.conf.chk
 cp ${OFILE} ${OFILE}.bak
 wc -l ${OFILE}*
 >$OFILE
 >$TMPFILE
 counter=1
+echo "grabbing blocklists ..."
 while read line; do
   pattern=$(echo $line | cut -f 1 -d "|")
   url=$(echo $line | cut -f 2 -d "|")
-  echo "curl $url | sed $pattern"
+  #echo "curl $url | sed $pattern"
   if [ x$pattern == "xNXDOMAIN" ];then
     continue
   fi
@@ -28,19 +30,27 @@ while read line; do
   counter=$(expr $counter + 1)
 done <blocklists
 
-#sed -i.b4clean '{/^address=\/\/127.0.0.1$/d;}' $TMPFILE
-
 # ... apply whitelist
+echo "whitelisting ..."
 while read line; do
   sed -i.b4whitelist '{/^address=\/'"$line"'\//d;}' $TMPFILE
 done <whitelist
 
 # ... sanitize
-sed -E -i.b4sanitize '/address=\/([0-9]{1,3}\.?){4}\//d' $TMPFILE
-sed -i.b4sanitize2 '/address=\/[^\.]*127.0.0.1$/d' $TMPFILE
+echo "sanitizing ..."
+#sed -i.b4clean '{/^address=\/\/127.0.0.1$/d;}' $TMPFILE
+#sed -E -i.b4sanitize '/address=\/([0-9]{1,3}\.?){4}\//d' $TMPFILE
+#sed -E -i.b4sani'/address=\/[^\.]*127.0.0.1$/d' $TMPFILE
+#sed -E -i.b4sanitize '/address=\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\//d' $TMPFILE
+
+# ... trying to speed up sanitizing ...
+
+# remove all comments, blanks, etc
+sed -En '/^address=\//p' $TMPFILE | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' | sed -En '/address=\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\//d;p' > $WORKFILE
 
 # ... unique entries
-sort -u -o ${OFILE} ${TMPFILE}
+echo "removing dups ..."
+sort -u -o ${OFILE} ${WORKFILE}
 
 wc -l ${OFILE}*
 

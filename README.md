@@ -40,7 +40,9 @@ $ service dnsmasq restart
 | ------- | ------- |
 | NXDOMAIN | Source entry skipped |
 | csv | Source parsed as comma separated values |
+| pipes | Source starting with 2 pipes which I use as a separator. Needs special handling. |
 
 # Kudos
 
 Kudos to [notracking](https://github.com/notracking/hosts-blocklists)! The blocklist is based on the work done in this retired project!
+Kudos to [RPiList](https://github.com/RPiList)! Adding their blocklists too!
