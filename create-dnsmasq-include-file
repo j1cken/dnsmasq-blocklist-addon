@@ -24,12 +24,15 @@ while read line; do
   counter=$(expr $counter + 1)
 done <blocklists
 
-sed -i.b4clean '{/^address=\/\/127.0.0.1$/d;}' $OFILE
+#sed -i.b4clean '{/^address=\/\/127.0.0.1$/d;}' $OFILE
 
 # ... apply whitelist
 while read line; do
-  sed -i.whitelist '{/^address=\/'"$line"'\//d;}' $OFILE
+  sed -i.b4whitelist '{/^address=\/'"$line"'\//d;}' $OFILE
 done <whitelist
+
+# ... sanitize
+sed -i.b4sanitize '/address=\/[0-9a-z-]*\//d' $OFILE
 
 wc -l ${OFILE}*
 
