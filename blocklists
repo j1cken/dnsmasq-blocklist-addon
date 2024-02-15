@@ -1,3 +1,4 @@
+pipes|https://raw.githubusercontent.com/RPiList/specials/master/Blocklisten/Corona-Blocklist|hostfile|`corona`
 ^127.0.0.1[[:space:]]|https://someonewhocares.org/hosts/|hostfile|`ads`|
 ^0.0.0.0[[:space:]]|https://raw.githubusercontent.com/StevenBlack/hosts/master/data/StevenBlack/hosts|hostfile|`ads`|
 ^|https://raw.githubusercontent.com/piwik/referrer-spam-blacklist/master/spammers.txt|hostfile|`spam`|
