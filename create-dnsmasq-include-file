@@ -32,7 +32,8 @@ while read line; do
 done <whitelist
 
 # ... sanitize
-sed -i.b4sanitize '/address=\/[0-9a-z-]*\//d' $OFILE
+sed -E -i.b4sanitize '/address=\/([0-9]{1,3}\.?){4}\//d' $OFILE
+sed -i.b4sanitize2 '/address=\/[^\.]*127.0.0.1$/d' $OFILE
 
 wc -l ${OFILE}*
 
