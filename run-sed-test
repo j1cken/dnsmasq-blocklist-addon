@@ -1,1 +1,3 @@
-sed -En '/^address=\//p' testfile | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' | sed -En '/address=\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\//d;p'
+MYFILE=${1:-testfile}
+#sed -En '/^address=\//p' $MYFILE | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' | sed -En '/address=\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\//d;p'
+sed -En '/^address=\//p' $MYFILE | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' | sed -En '/address=\/([0-9]{1,3}\.?){4}\//d;p'
