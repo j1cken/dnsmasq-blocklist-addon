@@ -1,3 +1,4 @@
+#!/usr/local/bin/bash
 OFILE=/usr/local/etc/dnsmasq.more.conf
 TMPFILE=/usr/local/etc/dnsmasq.more.conf.tmp
 WORKFILE=/usr/local/etc/dnsmasq.more.conf.chk
@@ -45,8 +46,30 @@ echo "sanitizing ..."
 
 # ... trying to speed up sanitizing ...
 
-# remove all comments, blanks, etc
-sed -En '/^address=\//p' $TMPFILE | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' | sed -En '/address=\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\//d;p' > $WORKFILE
+pushd /tmp/shm
+
+split -l100000 $TMPFILE
+
+i=0
+for myfile in $(ls -1 x*); do
+  sed -En '/^address=\//p' $myfile | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' > $myfile.hlthy &
+  #sed -En '/^address=\//p' $myfile | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' | sed -En '/address=\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\//d;p' > $myfile.hlthy &
+  pids[${i}]=$!
+  if [ ${#pids[@]} -eq 4 ]; then
+    # wait for all pids
+    for pid in ${pids[*]}; do
+        wait $pid
+    done
+    unset pids
+    i=-1
+  fi
+  i=$((i+1))
+done
+
+cat *.hlthy > $WORKFILE
+rm x*
+
+popd
 
 # ... unique entries
 echo "removing dups ..."
