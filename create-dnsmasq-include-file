@@ -2,6 +2,8 @@
 OFILE=/usr/local/etc/dnsmasq.more.conf
 TMPFILE=/usr/local/etc/dnsmasq.more.conf.tmp
 WORKFILE=/usr/local/etc/dnsmasq.more.conf.chk
+
+if [ $# -eq 0 ]; then
 cp ${OFILE} ${OFILE}.bak
 wc -l ${OFILE}*
 >$OFILE
@@ -30,12 +32,7 @@ while read line; do
   #fi
   counter=$(expr $counter + 1)
 done <blocklists
-
-# ... apply whitelist
-echo "whitelisting ..."
-while read line; do
-  sed -i.b4whitelist '{/^address=\/'"$line"'\//d;}' $TMPFILE
-done <whitelist
+fi
 
 # ... sanitize
 echo "sanitizing ..."
@@ -52,7 +49,7 @@ split -l100000 $TMPFILE
 
 i=0
 for myfile in $(ls -1 x*); do
-  sed -En '/^address=\//p' $myfile | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' > $myfile.hlthy &
+  sed -n '/^address=\//p' $myfile | sed -n '/127.0.0.1$/!d;p' | sed -n '/address=\/[^\.]*127.0.0.1$/d;p' > $myfile.hlthy &
   #sed -En '/^address=\//p' $myfile | sed -En '/address=\/[^\.]*127.0.0.1$/d;p' | sed -En '/address=\/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\//d;p' > $myfile.hlthy &
   pids[${i}]=$!
   if [ ${#pids[@]} -eq 4 ]; then
@@ -74,6 +71,12 @@ popd
 # ... unique entries
 echo "removing dups ..."
 sort -u -o ${OFILE} ${WORKFILE}
+
+# ... apply whitelist
+echo "whitelisting ..."
+while read line; do
+  sed -i.b4whitelist '{/^address=\/'"$line"'\//d;}' $OFILE
+done <whitelist
 
 wc -l ${OFILE}*
 
