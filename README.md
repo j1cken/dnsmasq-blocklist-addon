@@ -1,3 +1,5 @@
+# Archived Repo - Rewritten with node.js, needs some love to publish
+
 # (FreeBSD) AdBlock using dnsmasq
 
 It's just a simple script which creates an include file for dnsmasq. 
